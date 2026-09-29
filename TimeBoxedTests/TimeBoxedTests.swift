@@ -144,6 +144,14 @@ final class TimeBoxedTests: XCTestCase {
 
 
 final class ProPurchaseTests: XCTestCase {
+    func testAppBundleIncludesPrivacyPolicyToEnablePurchaseButtons() throws {
+        let value = try XCTUnwrap(Bundle.main.object(forInfoDictionaryKey: "ProPrivacyPolicyURL") as? String)
+        let url = try XCTUnwrap(URL(string: value))
+        XCTAssertEqual(url.scheme, "https")
+        XCTAssertNotNil(url.host)
+        XCTAssertEqual(url.absoluteString, "https://greggroll.github.io/TimeBox/")
+    }
+
     @MainActor
     func testProPurchasesExpirationRefundAndRestore() async throws {
         let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "Pro", withExtension: "storekit"))

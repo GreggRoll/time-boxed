@@ -18,6 +18,7 @@ struct ProView: View {
                 PlannerBackground()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
+                        legalLinks
                         hero
                         VStack(alignment: .leading, spacing: 22) {
                             benefit("clock.arrow.circlepath", "Every day, within reach", "Revisit your saved time boxes with unlimited history access.")
@@ -123,20 +124,31 @@ struct ProView: View {
         .disabled(proStore.isPurchasing || privacyURL == nil)
     }
 
-    private var footer: some View {
+    private var legalLinks: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Button("Restore Purchases") { Task { await proStore.restore() } }
-                .disabled(proStore.isPurchasing)
-            Link("Manage Subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
-            Link("Terms of Use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+            Link("Terms of Use (EULA)", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                .frame(minHeight: 44)
             if let privacyURL {
                 Link("Privacy Policy", destination: privacyURL)
+                    .frame(minHeight: 44)
             } else {
                 Button("Privacy Policy") { showsPrivacyInfo = true }
                 Text("Purchases will be available once the privacy policy is published.")
                     .font(.footnote)
                     .foregroundStyle(AppTheme.secondaryText)
             }
+        }
+        .font(.subheadline)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(AppTheme.cardSurface, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var footer: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Button("Restore Purchases") { Task { await proStore.restore() } }
+                .disabled(proStore.isPurchasing)
+            Link("Manage Subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
             Text("Payment is charged to your Apple Account at confirmation. Monthly subscriptions renew automatically unless canceled at least 24 hours before the current period ends. Manage or cancel in your App Store account settings. Your saved days stay on this device if Pro access ends.")
                 .font(.caption)
                 .foregroundStyle(AppTheme.secondaryText)

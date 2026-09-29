@@ -400,12 +400,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Time Boxed";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_FILE = TimeBoxed/Info.plist;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Time Boxed exports selected blocks to your calendars.";
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Time Boxed exports selected blocks to your calendars.";
 				INFOPLIST_KEY_NSRemindersFullAccessUsageDescription = "Time Boxed exports selected blocks to your reminders.";
@@ -418,7 +419,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.11;
+				MARKETING_VERSION = 0.12.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.GregAdams.TimeBoxed;
 				PRODUCT_NAME = "Time Boxed";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -434,12 +435,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Time Boxed";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_FILE = TimeBoxed/Info.plist;
 				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "Time Boxed exports selected blocks to your calendars.";
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Time Boxed exports selected blocks to your calendars.";
 				INFOPLIST_KEY_NSRemindersFullAccessUsageDescription = "Time Boxed exports selected blocks to your reminders.";
@@ -452,7 +454,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.11;
+				MARKETING_VERSION = 0.12.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.GregAdams.TimeBoxed;
 				PRODUCT_NAME = "Time Boxed";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

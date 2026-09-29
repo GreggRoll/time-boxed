@@ -10,20 +10,20 @@ Draft products and English localizations were created under that app on Septembe
 
 | Product ID | App Store Connect ID | Type | US price status |
 | --- | --- | --- | --- |
-| `com.GregAdams.TimeBoxed.pro.monthly` | `6812531377` | Auto-renewable, one month | Requested $0.99/month; starting price still needs saving |
+| `com.GregAdams.TimeBoxed.pro.monthly` | `6812531377` | Auto-renewable, one month | $0.99/month starting price saved and verified |
 | `com.GregAdams.TimeBoxed.pro.lifetime` | `6812531093` | Non-consumable | $9.99 starting price saved and verified |
 
 Subscription group: **Time Boxed Pro**, ID `22388123`.
 
-Apple's API returns the $0.99 US subscription price point but rejects saving the initial price with a pricing-information error. Attempts with a future date confirm that a starting price is required first. Finish the initial monthly price in the App Store Connect web UI, which currently requires user sign-in in the in-app browser. No monthly price has been saved.
+Both US starting prices are saved and verified. The monthly subscription uses a one-month period with payment at the beginning of each period. Its initial price was saved through `PATCH /v1/subscriptions/{id}` with an included price record; the standalone subscription-price creation endpoint rejected initial-price requests. No browser sign-in is needed for this completed pricing step.
 
 Both products remain in `MISSING_METADATA`; neither has been submitted for review. Finish availability/territory choices and review screenshots, confirm account agreements and tax/banking status, and submit them with the app when ready. Live localized prices come from StoreKit.
 
-The app's English App Store Connect localization currently has no Privacy Policy URL, Privacy Choices URL, or privacy-policy text. A public policy is still needed.
+The public privacy policy is published at https://greggroll.github.io/TimeBox/ (verified September 16, 2026). App Store Connect privacy metadata still needs to be confirmed separately.
 
-Set the app target's `INFOPLIST_KEY_ProPrivacyPolicyURL` build setting to the real public HTTPS privacy policy URL for both Debug and Release. Until configured, the Pro page explains that the policy is unavailable and disables new purchases; restore purchases remains available. The page uses Apple's standard EULA. Also provide the policy and terms links in App Store metadata. See [Apple's subscription guidance](https://developer.apple.com/app-store/subscriptions/).
+`TimeBoxed/Info.plist` supplies `ProPrivacyPolicyURL` in both Debug and Release, enabling both purchase buttons. Both configurations use this file alongside Xcode's generated entries; a custom `INFOPLIST_KEY_` build setting alone did not include the key in the built app. A regression test checks the generated app bundle contains this URL. If this key is removed, the Pro page disables new purchases; restore purchases remains available. The page uses Apple's standard EULA. Also provide the policy and terms links in App Store metadata. See [Apple's subscription guidance](https://developer.apple.com/app-store/subscriptions/).
 
-The product drafts, localizations, and lifetime price are saved in App Store Connect. No app or product review submission, build upload, or release was performed.
+The product drafts, localizations, and both US prices are saved in App Store Connect. No app or product review submission, build upload, or release was performed.
 
 ## Implementation
 
@@ -47,7 +47,7 @@ Before release, check the purchase sheet on small iPhones, iPad, larger text siz
 - All 9 XCTest tests passed on iOS 17.5, including both prices/products, purchase, expiration, lifetime, restore, refund, and denied free exports.
 - Visually checked the blurred calendar and centered Unlock History button, and opened the Pro sheet on iPhone 15 Pro in dark mode. The sheet displayed the local StoreKit $0.99/month and $9.99 lifetime options.
 - iOS 26.3 StoreKit tests could not load their configuration; this matches the issue described in [Apple's StoreKit Test forum](https://developer.apple.com/forums/tags/storekittest?page=2). Use iOS 17.5 for the bundled test suite on this machine until its newer simulator runtime is updated.
-- Live App Store sandbox purchases and the public Privacy Policy link remain release setup work.
+- Live App Store sandbox purchases remain release verification work; the public Privacy Policy link is configured.
 
 ## Suggested future Pro features
 
