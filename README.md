@@ -6,6 +6,8 @@
 <p align="center"><strong>Give your priorities a place in your day.</strong><br />A thoughtful daily planner for iPhone and iPad, built with SwiftUI.</p>
 <p align="center">iOS 17+ · iPhone & iPad · SwiftUI · StoreKit 2</p>
 
+[**Try the interactive demo**](https://greggroll.github.io/time-boxed/demo/) · [**Download on the App Store**](https://apps.apple.com/us/app/time-boxed-focus-your-day/id6762071236)
+
 Time Boxed brings your priorities, loose thoughts, and schedule into one calm workspace. Capture what matters, make room for it on your timeline, and return to your plans as the day unfolds.
 
 This repository contains the native iOS app and the original Next.js web prototype. Native iOS is the focus of current development; the features below describe the iOS app unless noted otherwise.
@@ -105,6 +107,12 @@ The native app uses **SwiftUI and Observation** for its interface and state, **l
 | [`TimeBoxedTests`](TimeBoxedTests) | XCTest suite and StoreKit test catalog |
 | [`src`](src) | Original Next.js web prototype |
 | [`docs`](docs) | Privacy policy site and development notes |
+
+## GitHub Pages demo
+
+The static, interactive demo is in [`docs/demo`](docs/demo/index.html). It needs no build, login, or backend. Edits stay in the current page and reset on reload. The existing privacy policy remains at `docs/index.html`.
+
+To publish, configure the repository’s **Settings → Pages → Deploy from a branch**, select your release branch and the **`/docs`** folder, then save. The demo will be available at `https://greggroll.github.io/time-boxed/demo/`.
 
 ## Project notes
 

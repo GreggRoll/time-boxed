@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try Time Boxed: give your priorities, notes, and schedule a place in your day. Available for iPhone and iPad.">
+  <meta name="theme-color" content="#101c15">
+  <title>Time Boxed · Give your day a little structure</title>
+  <link rel="stylesheet" href="demo.css">
+  <script src="demo.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#demo">Skip to interactive demo</a>
+  <header><a class="brand" href="./"><span class="mark">TB</span> Time Boxed</a><nav aria-label="Main"><a href="../">Privacy</a><a href="https://github.com/GreggRoll/time-boxed">GitHub ↗</a></nav></header>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">A LITTLE STRUCTURE. A LITTLE MORE SPACE.</p>
+      <h1>Give what matters<br>a place in your day.</h1>
+      <p class="intro">Gather your thoughts. Choose your priorities. Make room for them on your timeline. A calm daily planner for iPhone and iPad.</p>
+      <a class="download" href="https://apps.apple.com/us/app/time-boxed-focus-your-day/id6762071236">Download on the App Store <span aria-hidden="true">↗</span></a>
+      <p class="small">Your daily planner is free. Optional Pro features available.</p>
+    </section>
+    <section id="demo" aria-labelledby="demo-title">
+      <div class="section-heading"><div><p class="eyebrow">MAKE A LITTLE ROOM</p><h2 id="demo-title">Try a slower kind of planning.</h2></div><button type="reset" form="planner">Reset demo</button></div>
+      <p class="hint" id="demo-help">An interactive web preview. Edit any field to make this sample day yours. Changes last until you reset or reload this page; they don’t sync to the app.</p>
+      <noscript><p>You can edit the sample plan and reset it without JavaScript.</p></noscript>
+      <form id="planner" aria-describedby="demo-help">
+        <div class="planner-top"><div><span class="eyebrow">YOUR DAILY WORKSPACE</span><h3>A day with intention</h3></div><span class="pill">Sample day</span></div>
+        <div class="workspace">
+          <div class="thoughts">
+            <fieldset><legend>Top priorities <span>Start with what matters.</span></legend>
+              <label class="priority"><span>01</span><input aria-label="Priority 1" value="Make progress on the big idea" maxlength="200"></label>
+              <label class="priority"><span>02</span><input aria-label="Priority 2" value="Get outside for a walk" maxlength="200"></label>
+              <label class="priority"><span>03</span><input aria-label="Priority 3" value="Leave room to recharge" maxlength="200"></label>
+            </fieldset>
+            <label class="notes-label" for="notes">Brain dump <span>Get it out of your head.</span></label>
+            <textarea id="notes" rows="7" maxlength="5000">An idea doesn’t need a perfect plan yet.
+
+Sketch out the next step.
+Pick up something good for dinner.
+Make time for a chapter of my book.</textarea>
+          </div>
+          <fieldset class="timeline"><legend>Time boxes <span>A place for your priorities.</span></legend>
+            <label class="block"><time>9:00 AM</time><input aria-label="9 AM time box" value="Coffee & choose today’s priorities" maxlength="200"></label>
+            <label class="block focus"><time>10:00 AM</time><input aria-label="10 AM time box" value="Deep work · the big idea" maxlength="200"></label>
+            <label class="block focus"><time>11:00 AM</time><input aria-label="11 AM time box" value="Keep the momentum going" maxlength="200"></label>
+            <label class="block"><time>12:00 PM</time><input aria-label="Noon time box" value="Lunch & a walk outside" maxlength="200"></label>
+            <label class="block"><time>1:00 PM</time><input aria-label="1 PM time box" value="Clear the little things" maxlength="200"></label>
+            <label class="block"><time>2:00 PM</time><input aria-label="2 PM time box" placeholder="Leave a little breathing room…" maxlength="200"></label>
+          </fieldset>
+        </div>
+      </form>
+      <p id="status" class="small" role="status" aria-live="polite"></p>
+    </section>
+    <section class="features" aria-label="In the iOS app">
+      <article><span class="feature-number">01 / FOCUS</span><h2>Less to juggle.</h2><p>Keep priorities, loose thoughts, and time boxes together in one daily workspace.</p></article>
+      <article><span class="feature-number">02 / FLEXIBILITY</span><h2>Your day, your rhythm.</h2><p>In the app, choose planning hours, use 30- or 60-minute slots, and merge blocks for longer sessions.</p></article>
+      <article><span class="feature-number">03 / SIMPLICITY</span><h2>Plans stay with you.</h2><p>The iOS app saves plans locally and works offline, with no account required. Pro adds history and exports to Apple Calendar and Reminders.</p></article>
+    </section>
+    <section class="closing"><h2>Make room for a good day.</h2><a class="download" href="https://apps.apple.com/us/app/time-boxed-focus-your-day/id6762071236">Get Time Boxed <span aria-hidden="true">↗</span></a></section>
+  </main>
+  <footer><span>Time Boxed · A little structure for your day.</span><a href="../">Privacy policy</a></footer>
+</body>
+</html>
