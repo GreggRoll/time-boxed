@@ -12,6 +12,14 @@ Time Boxed brings your priorities, loose thoughts, and schedule into one calm wo
 
 This repository contains the native iOS app and the original Next.js web prototype. Native iOS is the focus of current development; the features below describe the iOS app unless noted otherwise.
 
+## Open source. Built with your help.
+
+Time Boxed is open source under the [MIT License](LICENSE), and everyone is welcome to help improve it. Bug fixes, new features, accessibility improvements, design, documentation, and tests are all welcome.
+
+**Get a free lifetime subscription to Time Boxed Pro when your contribution is successfully merged.** On GitHub, merge requests (MRs) are called pull requests (PRs). A successful contribution means your PR has been reviewed, accepted, and merged by a maintainer—not simply submitted.
+
+[Read the contribution guide](CONTRIBUTING.md) to get started and learn how to claim your reward, or [browse the issues](https://github.com/GreggRoll/time-boxed/issues) to find something to work on. First-time contributors are welcome.
+
 ## A daily planner that fits your day
 
 - **Priorities up front.** Choose between one and six priorities to keep the important things visible.
