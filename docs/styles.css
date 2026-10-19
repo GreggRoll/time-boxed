@@ -294,12 +294,9 @@ footer {
 
 @media (max-width: 30rem) {
   .repo-link {
-    font-size: 0;
-  }
-
-  .repo-link::after {
-    content: "GitHub";
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    max-width: 8rem;
+    text-align: right;
   }
 
   .hero {
