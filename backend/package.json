@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node --env-file-if-exists=.env server.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@apple/app-store-server-library": "3.1.0",
+    "cbor": "10.0.12",
+    "node-app-attest": "1.0.1",
     "redis": "6.3.0"
   }
 }

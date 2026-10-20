@@ -6,6 +6,7 @@ import { createAuthorizer, createAppleAuthorizer } from '../apple.mjs';
 import { generateKeyPairSync } from 'node:crypto';
 import { createLimiter } from '../limits.mjs';
 import { createPlanningServer } from '../server.mjs';
+import { subjectHash } from '../app-attest.mjs';
 import { HttpError } from '../errors.mjs';
 
 const task = { title: 'Appointment', startTimes: ['21:00'], fillsRemainingTime: false };
@@ -114,7 +115,7 @@ test('global quota bounds total model calls across purchases', async () => {
 });
 
 async function withServer(deps, run) {
-  const server = createPlanningServer(deps);
+  const server = createPlanningServer({ appAttest: { assert: async () => subjectHash('purchase') }, ...deps });
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
   try { await run(`http://127.0.0.1:${server.address().port}`); }
@@ -173,4 +174,33 @@ test('real Apple verifier rejects forged purchase proofs without contacting Open
   const encode = value => Buffer.from(JSON.stringify(value)).toString('base64url');
   const forged = `${encode({ alg: 'none' })}.${encode(monthly)}.invalid-signature`;
   await assert.rejects(authorize(forged), error => error.status === 403);
+});
+
+test('server defaults deny model runs without App Attest, even with a valid-looking purchase', async () => {
+  await withServer({ appAttest: undefined, authorize: async () => assert.fail('App integrity must be checked first'),
+    generate: () => assert.fail('An unauthenticated caller must never invoke OpenAI') }, async url => {
+    assert.equal((await post(url, { brainDump: 'Task', transaction: 'a.b.c' })).status, 401);
+  });
+});
+
+test('App Attest proof must belong to the same purchase that Apple verifies', async () => {
+  await withServer({ appAttest: { assert: async () => subjectHash('another-purchase') }, authorize: async () => 'purchase',
+    generate: () => assert.fail('A different purchase must not invoke OpenAI') }, async url => {
+    assert.equal((await post(url, { brainDump: 'Task', transaction: 'a.b.c' })).status, 403);
+  });
+});
+
+test('challenge and registration routes never invoke the model', async () => {
+  const events = [];
+  await withServer({ authorize: async () => { events.push('pro'); return 'purchase'; },
+    appAttest: { challenge: async (subject, keyId) => { assert.equal(subject, 'purchase'); assert.equal(keyId, 'key'); return { challenge: 'nonce', registered: false }; },
+      register: async input => { assert.equal(input.attestation, 'attestation'); events.push('register'); } },
+    generate: () => assert.fail('App setup must never invoke OpenAI') }, async url => {
+    const setup = await fetch(`${url}/v1/attest/challenge`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keyId: 'key', transaction: 'a.b.c' }) });
+    assert.equal(setup.status, 200);
+    assert.deepEqual(await setup.json(), { challenge: 'nonce', registered: false });
+    const register = await fetch(`${url}/v1/attest/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keyId: 'key', challenge: 'nonce', attestation: 'attestation' }) });
+    assert.equal(register.status, 200);
+    assert.deepEqual(events, ['pro', 'register']);
+  });
 });

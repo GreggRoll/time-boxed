@@ -14,7 +14,11 @@ The local file has been created with empty secret fields and is ignored by Git. 
 
 For the hosted app, add the same value in **Render → time-boxed-planning → Environment → OPENAI_API_KEY**. Your local `.env` is not uploaded to Render.
 
-## Recommended hosting: Render
+## Hosting options
+
+For the Mac mini deployment with Docker, private Redis, Cloudflare Tunnel and mandatory App Attest, use [Mac mini hosting](mac-mini-hosting.md). This is the current deployment path.
+
+## Optional managed hosting: Render
 
 Use the root `render.yaml` Blueprint to create a Node web service and a private Render Key Value instance. The Blueprint selects paid, persistent service plans; Render shows their charges before creation. The persistent store keeps usage counters across service restarts. It contains hashed purchase identifiers and counters, not brain dumps.
 
@@ -26,6 +30,8 @@ Use the root `render.yaml` Blueprint to create a Node web service and a private 
 6. Set **`PlanningAPIURL`** in `TimeBoxed/Info.plist` to **`https://<your-service>.onrender.com/v1/plan`**, then rebuild the iOS app. Leave the OpenAI key out of this file.
 
 Render manages HTTPS. Both services use the same region and the Key Value URL is injected automatically as `REDIS_URL`. See [Render web services](https://render.com/docs/web-services), [Blueprint configuration](https://render.com/docs/blueprint-spec), and [Key Value](https://render.com/docs/key-value).
+
+The backend now also requires `APP_ATTEST_APP_ID_PREFIX` and production App Attest request signatures. The Mac mini guide describes enrollment and real-device testing; unsigned clients cannot call `/v1/plan`.
 
 ## Apple purchase verification
 

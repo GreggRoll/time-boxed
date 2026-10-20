@@ -13,6 +13,9 @@
 # Local credentials, including editor backups. Only the empty example is shareable.
 .env*
 !.env.example
+# Runtime tunnel credentials and datastore backups.
+/backend/.secrets/
+/backend/backups/
 
 # testing
 /coverage

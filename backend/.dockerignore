@@ -1,0 +1,12 @@
+# Allowlist the build context so credentials, backups, local files and Git history never enter an image layer.
+**
+!Dockerfile
+!.dockerignore
+!package.json
+!package-lock.json
+!*.mjs
+!certs/
+!certs/*.cer
+!certs/README.md
+!test/
+!test/*.mjs

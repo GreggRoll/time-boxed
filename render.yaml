@@ -24,6 +24,10 @@ services:
         sync: false
       - key: APPLE_PRIVATE_KEY
         sync: false
+      - key: APP_ATTEST_APP_ID_PREFIX
+        value: J3YZVWSX7K
+      - key: APP_ATTEST_ENVIRONMENT
+        value: production
       - key: APPLE_ENVIRONMENT
         value: Production
       - key: PLANNING_DAILY_LIMIT

@@ -1,0 +1,92 @@
+name: time-boxed
+services:
+  backend:
+    build:
+      context: .
+      target: runtime
+    image: time-boxed-planning:local
+    init: true
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      PORT: "3000"
+      REDIS_URL: redis://redis:6379
+      TRUST_CLOUDFLARE: "true"
+      APP_ATTEST_ENVIRONMENT: production
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks: [edge, storage]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --appendonly, "yes", --appendfsync, everysec, --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    restart: unless-stopped
+    volumes: [redis-data:/data]
+    networks: [storage]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    profiles: [public]
+    user: "${HOST_UID:-501}:${HOST_GID:-20}"
+    command: [tunnel, --no-autoupdate, run, --token-file, /run/secrets/tunnel-token]
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./.secrets/cloudflare-tunnel-token:/run/secrets/tunnel-token:ro
+    networks: [edge]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  verification-store:
+    image: redis:7.4-alpine
+    profiles: [verify]
+    networks: [storage]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+  verification:
+    build:
+      context: .
+      target: build
+    image: time-boxed-planning:test
+    profiles: [verify]
+    command: [npm, test]
+    environment:
+      TEST_REDIS_URL: redis://verification-store:6379
+    depends_on:
+      verification-store:
+        condition: service_healthy
+    networks: [storage]
+networks:
+  edge:
+  storage:
+    internal: true
+volumes:
+  redis-data:
