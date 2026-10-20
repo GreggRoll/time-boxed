@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: time-boxed-planning
+    runtime: node
+    plan: 0.5c-512mb
+    region: virginia
+    rootDir: backend
+    buildCommand: npm ci --ignore-scripts && npm test
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.1
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: APPLE_BUNDLE_ID
+        value: com.GregAdams.TimeBoxed
+      - key: APPLE_APP_ID
+        value: "6762071236"
+      - key: APPLE_ISSUER_ID
+        sync: false
+      - key: APPLE_KEY_ID
+        sync: false
+      - key: APPLE_PRIVATE_KEY
+        sync: false
+      - key: APPLE_ENVIRONMENT
+        value: Production
+      - key: PLANNING_DAILY_LIMIT
+        value: "30"
+      - key: PLANNING_GLOBAL_DAILY_LIMIT
+        value: "10000"
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: time-boxed-planning-limits
+          property: connectionString
+  - type: keyvalue
+    name: time-boxed-planning-limits
+    plan: 256mb
+    region: virginia
+    maxmemoryPolicy: noeviction
+    persistenceMode: journal-snapshot
+    ipAllowList: []

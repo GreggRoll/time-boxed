@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/backend/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -9,8 +10,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-.env
-.env.*
+# Local credentials, including editor backups. Only the empty example is shareable.
+.env*
 !.env.example
 
 # testing
