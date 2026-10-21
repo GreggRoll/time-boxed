@@ -59,6 +59,8 @@ docker compose exec -T backend node -e "fetch('http://127.0.0.1:3000/health').th
 
 The Cloudflare connection supports a free `workers.dev` Worker in front of a **Workers VPC Service** and the Mac's private Cloudflare Tunnel. This is the current Cloudflare setup: see [Cloudflare deployment](../backend/cloudflare/README.md) for resources, permissions, validation and rollback. Workers VPC is free on all Workers plans during its open beta; standard Workers plan limits still apply. It does not use a temporary Quick Tunnel address.
 
+The configured app endpoint is `https://timeboxed-planning.timeboxed-greggroll.workers.dev/v1/plan`. Readiness is available at [`/health`](https://timeboxed-planning.timeboxed-greggroll.workers.dev/health). Public smoke checks verify a healthy Mac origin and rejection of unsigned/forged planning requests. Real-device App Attest and Pro validation are still required before a broad app release.
+
 ### Alternative: free ngrok hostname
 
 The [ngrok Free plan](https://ngrok.com/docs/pricing-limits/free-plan-limits) includes one assigned hostname, automatic HTTPS, 20,000 HTTP requests/month and 1 GB outgoing transfer/month. The [assigned hostname remains yours while the account exists](https://ngrok.com/blog/free-static-domains-ngrok-users); the endpoint has no session timeout. Free service has usage caps and no production uptime guarantee. Requests stop when a quota is exhausted; monitor the dashboard before expanding to all paid users. No plan upgrade is performed by this setup.

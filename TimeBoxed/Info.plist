@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>PlanningAPIURL</key>
+    <string>https://timeboxed-planning.timeboxed-greggroll.workers.dev/v1/plan</string>
     <key>ProPrivacyPolicyURL</key>
     <string>https://greggroll.github.io/TimeBox/</string>
 </dict>

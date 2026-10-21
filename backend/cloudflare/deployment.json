@@ -4,10 +4,14 @@
   "tunnelId": "6406729a-1901-4804-b655-632c879c56ff",
   "serviceName": "timeboxed-planning-backend",
   "origin": "http://backend:3000",
+  "publicURL": "https://timeboxed-planning.timeboxed-greggroll.workers.dev",
+  "serviceId": "01a15c5a-b3c3-73e2-b824-0c3911a2f5b2",
   "metadata": {
     "main_module": "worker.mjs",
     "compatibility_date": "2026-10-20",
-    "bindings": [],
+    "bindings": [
+      { "name": "PLANNING_BACKEND", "type": "vpc_service", "service_id": "01a15c5a-b3c3-73e2-b824-0c3911a2f5b2" }
+    ],
     "observability": {
       "enabled": true,
       "redact_query_string": true,
