@@ -13,7 +13,8 @@ services:
     environment:
       PORT: "3000"
       REDIS_URL: redis://redis:6379
-      TRUST_CLOUDFLARE: "true"
+      # No published ports: only the selected tunnel may supply client IP headers.
+      TRUST_PROXY: "${TRUST_PROXY:-ngrok}"
       APP_ATTEST_ENVIRONMENT: production
     depends_on:
       redis:
@@ -40,6 +41,26 @@ services:
       retries: 5
     security_opt: [no-new-privileges:true]
     mem_limit: 256m
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  ngrok:
+    image: ngrok/ngrok:alpine
+    profiles: [ngrok]
+    user: "${HOST_UID:-501}:${HOST_GID:-20}"
+    command: [start, --all, --config, /run/secrets/ngrok.yml, --log, stdout, --log-level, warn]
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./.secrets/ngrok.yml:/run/secrets/ngrok.yml:ro
+    networks: [edge]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
     logging:
       driver: json-file
       options: {max-size: 10m, max-file: "3"}

@@ -1,6 +1,6 @@
 # Host Time Boxed on the Mac mini
 
-This deployment runs the Node backend, a private Redis store, and (when configured) Cloudflare Tunnel in Docker. OpenAI still runs GPT-6 Luna remotely. There is no Render or managed Redis subscription in this setup; OpenAI usage, electricity, internet service, and any domain registration remain separate costs.
+This deployment runs the Node backend, a private Redis store, and (when configured) an ngrok tunnel in Docker. The free ngrok plan supplies a stable HTTPS hostname without buying a domain. Cloudflare Tunnel is an alternative for an existing domain. OpenAI still runs GPT-6 Luna remotely. There is no Render or managed Redis subscription in this setup; OpenAI usage, electricity and internet service remain separate costs.
 
 ## Current security model
 
@@ -55,7 +55,36 @@ docker compose exec -T backend node -e "fetch('http://127.0.0.1:3000/health').th
 
 ## Give the app a stable HTTPS address
 
-Production needs a domain you control, such as `api.your-domain.com`. A temporary Quick Tunnel hostname is not a production endpoint.
+### Free ngrok hostname (current setup)
+
+The [ngrok Free plan](https://ngrok.com/docs/pricing-limits/free-plan-limits) includes one assigned hostname, automatic HTTPS, 20,000 HTTP requests/month and 1 GB outgoing transfer/month. The [assigned hostname remains yours while the account exists](https://ngrok.com/blog/free-static-domains-ngrok-users); the endpoint has no session timeout. Free service has usage caps and no production uptime guarantee. Requests stop when a quota is exhausted; monitor the dashboard before expanding to all paid users. No plan upgrade is performed by this setup.
+
+An already-enrolled planning run normally makes **two requests** (challenge and plan). First enrollment normally makes four (challenge, registration, new challenge, plan). Thus 20,000 requests supports fewer than 10,000 planning runs/month after enrollment, health checks, failures and other traffic. OpenAI usage remains separate.
+
+1. Create an account at [ngrok signup](https://dashboard.ngrok.com/signup) and stay on **Free**. Find your assigned domain and your agent authtoken in the dashboard.
+2. Build the backend and run the login installer below. Then run this from the repository root in a local Terminal:
+
+   ```sh
+   backend/scripts/configure-ngrok.sh
+   ```
+
+3. Enter the assigned hostname (without `https://` or a path) and paste the authtoken at the hidden prompt. The script writes `~/Library/Application Support/TimeBoxedHost/.secrets/ngrok.yml` with mode `600`, validates it, and starts the ngrok profile. The token is never in Git, Docker image layers or command arguments. It is readable by administrators of this Mac.
+4. Keep **Full Capture** disabled in ngrok dashboard settings. It is opt-in; leaving it off stores request metadata without full headers/bodies. Local inspection is disabled in the installed agent config. ngrok terminates public HTTPS and relays traffic through its encrypted tunnel, so it is also a service provider processing API traffic. See [Traffic Inspector privacy settings](https://ngrok.com/docs/obs/traffic-inspection).
+5. Check `https://YOUR-ASSIGNED-HOSTNAME/health` from outside the network. Native API calls do not encounter the free plan's browser warning. For a browser health check, use `curl -H 'ngrok-skip-browser-warning: 1' https://YOUR-ASSIGNED-HOSTNAME/health`.
+6. Set `PlanningAPIURL` in `TimeBoxed/Info.plist` to `https://YOUR-ASSIGNED-HOSTNAME/v1/plan`, then build the new app and perform the real-device checks below.
+
+The login job detects the private ngrok config and starts it automatically. For a manual start:
+
+```sh
+cd "$HOME/Library/Application Support/TimeBoxedHost"
+TRUST_PROXY=ngrok docker compose --profile ngrok up -d --wait
+```
+
+`TRUST_PROXY` selects the rate limiter's client-IP header. The ngrok mode uses only the **last** `X-Forwarded-For` entry that ngrok appends; caller-supplied earlier entries and Cloudflare headers are ignored. This setting is safe only with the private container ingress in this Compose file. There are no host port mappings or router port-forwarding requirements. App Attest and purchase checks remain mandatory regardless of the hostname or headers.
+
+### Optional Cloudflare Tunnel with an existing domain
+
+Use a domain you control, such as `api.your-domain.com`. A temporary Quick Tunnel hostname is not a production endpoint. Configure only one tunnel provider; remove the private ngrok config before choosing Cloudflare in the login job.
 
 1. Add the domain to your Cloudflare account and complete its DNS setup.
 2. In Cloudflare, choose **Networking → Tunnels → Create Tunnel**.
@@ -65,7 +94,7 @@ Production needs a domain you control, such as `api.your-domain.com`. A temporar
 
    ```sh
    cd "$HOME/Library/Application Support/TimeBoxedHost"
-   docker compose --profile public up -d --wait
+   TRUST_PROXY=cloudflare docker compose --profile public up -d --wait
    ```
 
 6. Verify `https://api.your-domain.com/health` from outside your network.
@@ -89,7 +118,7 @@ After the image is built:
 backend/scripts/install-mac-host.sh
 ```
 
-This installs runtime files under `~/Library/Application Support/TimeBoxedHost` and the startup job `~/Library/LaunchAgents/com.gregadams.timeboxed.backend.plist`. The runtime directory and credentials are private to your Mac user and outside the Git checkout. On login, it starts Docker Desktop, waits for the engine, starts the existing deployment, and keeps the Mac awake while on AC power with `caffeinate -s`. If the tunnel token file is populated, it also starts the public profile. It does not rebuild images at login. Logs are under `~/Library/Logs/TimeBoxed/`.
+This installs runtime files under `~/Library/Application Support/TimeBoxedHost` and the startup job `~/Library/LaunchAgents/com.gregadams.timeboxed.backend.plist`. The runtime directory and credentials are private to your Mac user and outside the Git checkout. On login, it starts Docker Desktop, waits for the engine, starts the existing deployment, and keeps the Mac awake while on AC power with `caffeinate -s`. A private ngrok configuration starts the ngrok profile; otherwise a populated Cloudflare token starts the public profile. It does not rebuild images at login. Logs are under `~/Library/Logs/TimeBoxed/`.
 
 A full reboot or power failure still requires signing in/unlocking FileVault before a per-user Docker Desktop deployment resumes. Container restart policies recover process crashes after Docker is running; Docker health status alone does not restart a hung process. Plan Mac updates and service recovery accordingly. The app's manual planner remains available during backend downtime.
 
@@ -103,7 +132,7 @@ To stop the containers without deleting data:
 
 ```sh
 cd "$HOME/Library/Application Support/TimeBoxedHost"
-docker compose --profile public down
+docker compose --profile ngrok --profile public down
 ```
 
 Do **not** use `down -v`: it deletes the persistent Redis volume and all enrolled App Attest keys. The app can re-enroll after a datastore loss, but that temporarily interrupts cloud planning.
@@ -119,4 +148,4 @@ docker compose --profile verify run --build --rm verification
 
 The verification profile uses a separate disposable Redis container and no runtime secret file. It tests forged/mutated assertions, wrong purchase ownership, expired challenges, old counters, concurrent replay, re-registration, and production/development separation. Exactly one signed request in the HTTP replay test reaches the mocked model. Test runs spend no OpenAI credits.
 
-For updates, review the changes and back up the Redis volume. Build the new image from the repository with `cd backend && docker compose build backend`, then rerun `backend/scripts/install-mac-host.sh` from the repository root to refresh runtime code and restart the login job. Existing runtime secrets are preserved. You can also run `docker compose up -d --wait` from the installed runtime directory (add `--profile public` when using the tunnel). Keep Docker Desktop and the Node/Redis/cloudflared images updated; image tags in this setup track maintained release lines. An interrupted model response is not automatically retried, to avoid duplicate API spending.
+For updates, review the changes and back up the Redis volume. Build the new image from the repository with `cd backend && docker compose build backend`, then rerun `backend/scripts/install-mac-host.sh` from the repository root to refresh runtime code and restart the login job. Existing runtime secrets are preserved. Use the manual startup commands above for your selected tunnel. Keep Docker Desktop and the Node/Redis/tunnel images updated; image tags in this setup track maintained release lines. An interrupted model response is not automatically retried, to avoid duplicate API spending.

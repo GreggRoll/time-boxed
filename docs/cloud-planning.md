@@ -16,7 +16,7 @@ For the hosted app, add the same value in **Render → time-boxed-planning → E
 
 ## Hosting options
 
-For the Mac mini deployment with Docker, private Redis, Cloudflare Tunnel and mandatory App Attest, use [Mac mini hosting](mac-mini-hosting.md). This is the current deployment path.
+For the Mac mini deployment with Docker, private Redis, a free ngrok HTTPS hostname (or optional Cloudflare Tunnel) and mandatory App Attest, use [Mac mini hosting](mac-mini-hosting.md). This is the current deployment path.
 
 ## Optional managed hosting: Render
 

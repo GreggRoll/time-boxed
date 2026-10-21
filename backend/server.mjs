@@ -17,7 +17,7 @@ const appRequired = async () => { throw new HttpError(401, 'Open Time Boxed to c
 
 export function createPlanningServer({ authorize, limit, generate, ready = () => true,
   appAttest = { challenge: appRequired, register: appRequired, assert: appRequired },
-  checkIngress = async () => {}, trustCloudflare = false }) {
+  checkIngress = async () => {}, trustedProxy = 'none' }) {
   return createServer(async (request, response) => {
     try {
       if (request.method === 'GET' && request.url === '/health') {
@@ -25,8 +25,11 @@ export function createPlanningServer({ authorize, limit, generate, ready = () =>
         return;
       }
       if (!['/v1/plan', '/v1/attest/challenge', '/v1/attest/register'].includes(request.url)) throw new HttpError(404, 'Not found.');
-      const forwarded = request.headers['cf-connecting-ip'];
-      const address = trustCloudflare && typeof forwarded === 'string' && isIP(forwarded) ? forwarded : request.socket.remoteAddress ?? 'unknown';
+      // ngrok appends the actual client IP, so earlier entries are untrusted input.
+      // Enable a proxy only with private ingress; never publish this container's port.
+      const forwarded = trustedProxy === 'cloudflare' ? request.headers['cf-connecting-ip']
+        : trustedProxy === 'ngrok' ? request.headers['x-forwarded-for']?.split(',').at(-1)?.trim() : undefined;
+      const address = typeof forwarded === 'string' && isIP(forwarded) ? forwarded : request.socket.remoteAddress ?? 'unknown';
       await checkIngress(address);
       if (request.method !== 'POST') throw new HttpError(405, 'Use POST.');
       if (!request.headers['content-type']?.startsWith('application/json')) throw new HttpError(415, 'Use application/json.');
@@ -89,7 +92,7 @@ export async function start(env = process.env) {
     globalDailyLimit: positiveInt('PLANNING_GLOBAL_DAILY_LIMIT', 10000),
   });
   const server = createPlanningServer({ authorize, limit, appAttest: appAttestFromEnv(redis, env),
-    checkIngress: createIngressLimiter(redis), trustCloudflare: env.TRUST_CLOUDFLARE === 'true',
+    checkIngress: createIngressLimiter(redis), trustedProxy: env.TRUST_PROXY ?? 'none',
     generate: brainDump => extractTasks(brainDump, { apiKey }), ready: () => redis.isReady });
   server.requestTimeout = 15_000;
   server.headersTimeout = 10_000;

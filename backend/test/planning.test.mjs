@@ -123,6 +123,29 @@ async function withServer(deps, run) {
 }
 const post = (url, body) => fetch(`${url}/v1/plan`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
+test('proxy ingress uses only the selected proxy and rejects spoofed leading client IPs', async () => {
+  for (const [trustedProxy, expected] of [['ngrok', '203.0.113.9'], ['cloudflare', '198.51.100.8'], ['none', '127.0.0.1']]) {
+    const addresses = [];
+    await withServer({ trustedProxy, checkIngress: async address => addresses.push(address),
+      generate: () => assert.fail('Ingress checks must not spend credits') }, async url => {
+      const response = await fetch(`${url}/v1/plan`, { method: 'POST', headers: {
+        'Content-Type': 'application/json', 'X-Forwarded-For': '192.0.2.1, 203.0.113.9',
+        'CF-Connecting-IP': '198.51.100.8',
+      }, body: '{}' });
+      assert.equal(response.status, 401);
+      assert.deepEqual(addresses, [expected]);
+    });
+  }
+});
+
+test('malformed final proxy IP falls back to the socket, never to an attacker-supplied first IP', async () => {
+  await withServer({ trustedProxy: 'ngrok', checkIngress: async address => assert.equal(address, '127.0.0.1') }, async url => {
+    assert.equal((await fetch(`${url}/v1/plan`, { method: 'POST', headers: {
+      'Content-Type': 'application/json', 'X-Forwarded-For': '192.0.2.1, invalid',
+    }, body: '{}' })).status, 401);
+  });
+});
+
 test('HTTP endpoint authenticates and limits before making one model call', async () => {
   const calls = [];
   await withServer({ authorize: async proof => { calls.push('auth'); assert.equal(proof, 'a.b.c'); return 'purchase'; },
