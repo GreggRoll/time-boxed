@@ -1,0 +1,18 @@
+{
+  "accountId": "c382caed1e6e5cd6d7f11e3067c4806b",
+  "workerName": "timeboxed-planning",
+  "tunnelId": "6406729a-1901-4804-b655-632c879c56ff",
+  "serviceName": "timeboxed-planning-backend",
+  "origin": "http://backend:3000",
+  "metadata": {
+    "main_module": "worker.mjs",
+    "compatibility_date": "2026-10-20",
+    "bindings": [],
+    "observability": {
+      "enabled": true,
+      "redact_query_string": true,
+      "logs": { "enabled": true, "invocation_logs": false, "head_sampling_rate": 0.1 },
+      "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+    }
+  }
+}

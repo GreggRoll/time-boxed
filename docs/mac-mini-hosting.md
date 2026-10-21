@@ -1,6 +1,6 @@
 # Host Time Boxed on the Mac mini
 
-This deployment runs the Node backend, a private Redis store, and (when configured) an ngrok tunnel in Docker. The free ngrok plan supplies a stable HTTPS hostname without buying a domain. Cloudflare Tunnel is an alternative for an existing domain. OpenAI still runs GPT-6 Luna remotely. There is no Render or managed Redis subscription in this setup; OpenAI usage, electricity and internet service remain separate costs.
+This deployment runs the Node backend, a private Redis store, and a Cloudflare Tunnel in Docker. A small Cloudflare Worker with a Workers VPC Service can supply a stable `workers.dev` HTTPS hostname without buying a domain. A free ngrok hostname remains an alternative. OpenAI still runs GPT-6 Luna remotely. There is no Render or managed Redis subscription in this setup; OpenAI usage, electricity and internet service remain separate costs. Workers VPC is currently free during open beta.
 
 ## Current security model
 
@@ -55,7 +55,11 @@ docker compose exec -T backend node -e "fetch('http://127.0.0.1:3000/health').th
 
 ## Give the app a stable HTTPS address
 
-### Free ngrok hostname (current setup)
+### Cloudflare without buying a domain
+
+The Cloudflare connection supports a free `workers.dev` Worker in front of a **Workers VPC Service** and the Mac's private Cloudflare Tunnel. This is the current Cloudflare setup: see [Cloudflare deployment](../backend/cloudflare/README.md) for resources, permissions, validation and rollback. Workers VPC is free on all Workers plans during its open beta; standard Workers plan limits still apply. It does not use a temporary Quick Tunnel address.
+
+### Alternative: free ngrok hostname
 
 The [ngrok Free plan](https://ngrok.com/docs/pricing-limits/free-plan-limits) includes one assigned hostname, automatic HTTPS, 20,000 HTTP requests/month and 1 GB outgoing transfer/month. The [assigned hostname remains yours while the account exists](https://ngrok.com/blog/free-static-domains-ngrok-users); the endpoint has no session timeout. Free service has usage caps and no production uptime guarantee. Requests stop when a quota is exhausted; monitor the dashboard before expanding to all paid users. No plan upgrade is performed by this setup.
 

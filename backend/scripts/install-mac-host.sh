@@ -16,7 +16,7 @@ os.chmod(runtime,0o700)
 for name in ('compose.yaml','Dockerfile','.dockerignore','package.json','package-lock.json'):
     shutil.copy2(source/name,runtime/name)
 for path in source.glob('*.mjs'): shutil.copy2(path,runtime/path.name)
-for name in ('certs','scripts','test'):
+for name in ('certs','scripts','test','cloudflare'):
     shutil.copytree(source/name,runtime/name,dirs_exist_ok=True)
 if (source/'.env').exists() and not (runtime/'.env').exists():
     shutil.copy2(source/'.env',runtime/'.env')

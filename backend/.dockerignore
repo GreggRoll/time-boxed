@@ -10,3 +10,5 @@
 !certs/README.md
 !test/
 !test/*.mjs
+!cloudflare/
+!cloudflare/worker.mjs

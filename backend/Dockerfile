@@ -6,6 +6,7 @@ RUN npm ci --omit=dev --ignore-scripts
 COPY *.mjs ./
 COPY certs/ ./certs/
 COPY test/ ./test/
+COPY cloudflare/ ./cloudflare/
 RUN npm test
 
 FROM node:22-bookworm-slim AS runtime
